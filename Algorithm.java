@@ -1,28 +1,59 @@
-public class Main {
+package Alghoritm;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Recursion {
 
     public static void main(String[] args) {
-
-        int[] prices = {13, 17, 19, 25, 25, 25, 25, 25, 25, 27, 30};
-
-        System.out.println("Для 31: " + countMore(prices, 31)); // 0
-        System.out.println("Для 26: " + countMore(prices, 26)); // 2
-        System.out.println("Для 25: " + countMore(prices, 25)); // 2
-        System.out.println("Для 20: " + countMore(prices, 20)); // 8
+        compare(1);
+        compare(2);
+        compare(5);
+        compare(15);
     }
 
-    public static int countMore(int[] prices, int money) {
+    public static void compare(int day) {
+        System.out.println("=== Day " + day + " ===");
+        int[] startNumbers = { 21, 1, 20, 23 };
+        int iterative = chooseHobbyIterative(startNumbers, day);
+        int recursive = chooseHobbyRecursive(startNumbers, day, new Integer[day + 4]);
+        System.out.println("Iterative = " + iterative + " | Recursive = " + recursive);
+        System.out.println();
+    }
 
-        int left = 0;
-        int right = prices.length - 1;
-        while (left <= right) {
-            int middle = (left + right) / 2;
+    public static int chooseHobbyIterative(int[] startNumbers, int day) {
+        List<Integer> numbers = new ArrayList<>();
+        numbers.add(startNumbers[0]);
+        numbers.add(startNumbers[1]);
+        numbers.add(startNumbers[2]);
+        numbers.add(startNumbers[3]);
 
-            if (prices[middle] > money) {
-                right = middle - 1;
-            } else {
-                left = middle + 1;
-            }
+        for (int d = 0; d < day; d++) {
+            int index = d + 4;
+            int prev = numbers.get(index - 1);
+            int prePrePrev = numbers.get(index - 3);
+            numbers.add((prev * prePrePrev) % 10 + 1);
         }
-        return prices.length - left;
+
+        return numbers.get(numbers.size() - 1);
+    }
+
+    public static int chooseHobbyRecursive(int[] startNumbers, int day, Integer[] memory) {
+        int index = day + 3;
+
+        if (memory[index] != null) {
+            return memory[index];
+        }
+
+        if (index < 4) {
+            return startNumbers[index];
+        }
+
+        int prev = chooseHobbyRecursive(startNumbers, day - 1, memory);
+        int prePrePrev = chooseHobbyRecursive(startNumbers, day - 3, memory);
+        int value = (prev * prePrePrev) % 10 + 1;
+
+        memory[index] = value;
+        return value;
     }
 }
